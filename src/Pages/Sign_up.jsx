@@ -38,75 +38,36 @@ function Sign_up() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/register/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formState.email,
-          first_name: formState.name,
-          last_name: formState.lastname,
-          password: formState.password,
-          phonenumber: formState.phonenumber,
-          confirmpassword: formState.confirmpassword,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const access_token = data.access_token;
-
-        setAuthToken(access_token);
-        if (data.user_data) {
-          const user = data.user_data;
-          const reviewname = `${user.first_name} ${user.last_name}`;
-
-          if (user.first_name && user.last_name) {
-            const formattedUserName =
-              (user.first_name[0].toUpperCase() || "") +
-              (user.last_name[0].toUpperCase() || "");
-            setUserName(formattedUserName);
-            localStorage.setItem("user_name", reviewname);
-            setCookie("user_name", formattedUserName, 1);
-          } else {
-            console.error(
-              "Error: First name or last name is missing in user_data"
-            );
-          }
-        }
-        toast.success(
-          "Verification message sent to your email. Please check your inbox.",
-          {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeButton: false,
-
-            style: {
-              // backgroundColor: '#4dc196',
-              // color: 'white',
-              height: "90px",
+        const response = await fetch("/api/register/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
             },
-          }
-        );
-      } else {
-        const errorData = await response.json();
-        if (errorData && errorData.error) {
-          setErrorMessage(errorData.error);
+            body: JSON.stringify({
+                email: formState.email,
+                first_name: formState.name,
+                last_name: formState.lastname,
+                password: formState.password,
+                phonenumber: formState.phonenumber,
+                confirmpassword: formState.confirmpassword,
+            }),
+        });
+
+        console.log(response); // Adicionado para verificação
+
+        if (response.ok) {
+            const data = await response.json();
+            // Processa a resposta
         } else {
-          setErrorMessage(
-            "An error occurred during registration. Please check your input and try again."
-          );
+            const errorText = await response.text(); // Tente obter texto em vez de JSON
+            console.log("Error response:", errorText); // Log do erro
+            setErrorMessage("An error occurred. Please try again.");
         }
-      }
     } catch (error) {
-      console.error("Error:", error);
-      setErrorMessage(
-        "An error occurred during registration. Please try again later."
-      );
+        console.error("Error:", error);
+        setErrorMessage("An error occurred during registration. Please try again later.");
     }
-  };
+};
 
   return (
     <section>

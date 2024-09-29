@@ -139,3 +139,34 @@ class Review(models.Model):
     dislikes = models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.title
+
+
+###novos modelos
+
+class Trip(models.Model):
+    trip_name = models.CharField(max_length=255)
+    trip_img = models.URLField()  # URL da imagem da viagem
+    about = models.TextField()  # Descrição da viagem
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Preço da viagem
+
+    def __str__(self):
+        return self.trip_name
+
+class Location(models.Model):
+    name = models.CharField(max_length=255)  # Nome da localização
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Preço da localização
+    paragraf = models.TextField()  # Descrição da localização
+    image1 = models.URLField()  # URL da primeira imagem
+    image2 = models.URLField()  # URL da segunda imagem
+    image3 = models.URLField()  # URL da terceira imagem
+    image4 = models.URLField()  # URL da quarta imagem
+
+    def __str__(self):
+        return self.name
+
+class Card(models.Model):
+    travel_name = models.CharField(max_length=255)  # Nome da viagem
+    image = models.URLField()  # URL da imagem do cartão
+
+    def __str__(self):
+        return self.travel_name

@@ -374,29 +374,22 @@ def register(request):
         confirmpassword = request.data['confirmpassword']
 
         if password != confirmpassword:
-            return Response({'error': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'As senhas não coincidem.'}, status=status.HTTP_400_BAD_REQUEST)
 
         email = request.data['email']
         try:
             user = User.objects.get(email=email)
-            return Response({'error': 'User with this email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Já existe um usuário com este e-mail.'}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             pass
 
+        # Salvar o usuário sem verificação de email
         user = serializer.save(password=make_password(password))
 
-       
-        verification_code = str(uuid.uuid4())
-        user.verification_code = verification_code
-        user.is_verified = False  
-        user.save()
-
-        
-        send_verification_email(user.email, verification_code)
-
-        return Response({'message': 'Please check your email to verify your account.'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Registro realizado com sucesso!'}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['GET'])
@@ -435,9 +428,11 @@ def verify_user(request, verification_code):
 def login(request):
     email = request.data.get('email')
     password = request.data.get('password')
+    
     try:
         user = User.objects.get(email=email)
-        if user.check_password(password) and user.is_verified:
+
+        if user.check_password(password):
             refresh = RefreshToken.for_user(user)
 
             response_data = {
@@ -446,12 +441,11 @@ def login(request):
             }
 
             return Response(response_data, status=status.HTTP_200_OK)
-        elif user.check_password(password) and not user.is_verified:
-            return Response({'error': 'Account not verified. Please check your email for verification.'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({'error': 'There was a problem logging in. Check your email and password or create an account.'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Houve um problema ao fazer login. Verifique seu e-mail e senha ou crie uma conta.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
     except User.DoesNotExist:
-        return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'Credenciais inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
     
 
 

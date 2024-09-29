@@ -170,6 +170,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nerminorucova2004@gmail.com' 
 EMAIL_HOST_PASSWORD = 'duuqvbnmapnobzxp'  
 
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = False  # Opcional, se você não quiser exigir o e-mail
+
 
 import logging
 
